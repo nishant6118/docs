@@ -33,7 +33,7 @@ result = await guard.evaluate(tool_name, tool_input)
 
 **7-layer firewall** on every tool call:
 
-1. **Regex scan** — pattern matching, <1ms
+1. **Regex scan** — pattern matching, &lt;1ms
 2. **Risk scorer** — threat level 0–100
 3. **LLM gate** — semantic analysis, fires only when needed
 4. **Behavioral baseline** — anomaly detection
@@ -54,7 +54,7 @@ result = await guard.evaluate(tool_name, tool_input)
 
 ## Key stats
 
-- **<1ms** policy decision latency
+- **&lt;1ms** policy decision latency
 - **Sub-50ms** full firewall
 - **89%** of calls evaluated in pure Python (no LLM cost)
 - **5 frameworks** covered in one compliance report
