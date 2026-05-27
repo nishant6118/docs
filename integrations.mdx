@@ -1,0 +1,99 @@
+# Integrations
+
+Drop Polaxis into your existing agent framework in minutes.
+
+## LangGraph
+
+```python
+from polaxis.adapters.langgraph import PolaxisGuard
+
+guard = PolaxisGuard(api_key="ag_prod_...", agent_id="my-agent")
+
+# Wrap your tool node
+@guard.protect
+async def tool_node(state):
+    tool_name = state["tool_name"]
+    tool_input = state["tool_input"]
+    # Polaxis evaluates before this runs
+    return await execute_tool(tool_name, tool_input)
+```
+
+## CrewAI
+
+```python
+from polaxis.adapters.crewai import PolaxisGuard
+
+guard = PolaxisGuard(api_key="ag_prod_...", agent_id="crew-agent")
+
+class MyTool(BaseTool):
+    name = "send_email"
+
+    @guard.before_tool
+    def _run(self, to: str, subject: str, body: str):
+        # Polaxis evaluates before execution
+        return send_email(to, subject, body)
+```
+
+## PydanticAI
+
+```python
+from polaxis.adapters.pydanticai import PolaxisGuard
+
+guard = PolaxisGuard(api_key="ag_prod_...", agent_id="pydantic-agent")
+
+agent = Agent(
+    "claude-sonnet-4",
+    tools=[guard.wrap(send_email), guard.wrap(charge_card)]
+)
+```
+
+## Raw Python (no framework)
+
+```python
+from polaxis import Polaxis, BlockedError
+
+guard = Polaxis(api_key="ag_prod_...", agent_id="my-agent")
+
+async def safe_tool_call(tool_name: str, tool_input: dict):
+    try:
+        await guard.evaluate(tool_name, tool_input)
+        return await execute_tool(tool_name, tool_input)
+    except BlockedError as e:
+        return {"error": f"Blocked: {e.reason}"}
+```
+
+## OpenAI Agents SDK
+
+```python
+from polaxis import Polaxis, BlockedError
+
+guard = Polaxis(api_key="ag_prod_...", agent_id="openai-agent")
+
+async def before_tool_call(tool_name: str, tool_input: dict):
+    """Hook into OpenAI Agents SDK tool execution."""
+    await guard.evaluate(tool_name, tool_input)
+```
+
+## Sync support
+
+If your framework is synchronous:
+
+```python
+# Use evaluate_sync instead of await evaluate
+result = guard.evaluate_sync("send_email", {"to": "user@co.com"})
+```
+
+## Record actual cost after execution
+
+Track real spend against your budget:
+
+```python
+result = await guard.evaluate("call_llm", inputs, estimated_cost_usd=0.05)
+
+# After the tool runs:
+await guard.record_completion(
+    tool_name="call_llm",
+    actual_cost_usd=0.032,
+    duration_ms=1240
+)
+```

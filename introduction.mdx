@@ -1,0 +1,66 @@
+# Introduction
+
+**Polaxis** is the governance layer for AI agents.
+
+It sits between your agents and every tool they call — intercepting, evaluating, and logging every action before it executes.
+
+## The problem
+
+AI agents are shipping to production without guardrails. When something goes wrong — and it does — there's no audit trail, no kill switch, no way to explain what happened.
+
+- **April 2026:** An AI agent deleted an entire production database in 9 seconds via Railway API
+- **December 2025:** Claude Code ran `terraform destroy` on 1.9 million rows
+- **2025:** 28.65 million secrets exposed on GitHub — AI-related leaks up 81%
+
+## The solution
+
+One SDK. Three lines. Every tool call governed.
+
+```python
+from polaxis import Polaxis
+
+guard = Polaxis(api_key="ag_prod_...", agent_id="billing-agent")
+result = await guard.evaluate(tool_name, tool_input)
+# → allow | block (raises BlockedError) | escalate (waits for human)
+```
+
+## What Polaxis does
+
+**7-layer firewall** on every tool call:
+
+1. **Regex scan** — pattern matching, <1ms
+2. **Risk scorer** — threat level 0–100
+3. **LLM gate** — semantic analysis, fires only when needed
+4. **Behavioral baseline** — anomaly detection
+5. **Session graph** — cross-call correlation
+6. **Threat intel** — known attack patterns
+7. **Policy engine** — your custom rules
+
+**89% of calls never touch an LLM.** Pure Python speed.
+
+## Four pillars
+
+| Pillar | What it does |
+|--------|-------------|
+| **Policy Engine** | YAML rules that block, allow, or escalate any tool call |
+| **Human Approvals** | Slack notifications for high-risk actions — one click to approve or reject |
+| **Budget Controls** | Session and daily spend caps. Hard stop when limit hit. |
+| **Compliance Reports** | SOC 2, GDPR, HIPAA, EU AI Act, OWASP — one-click PDF |
+
+## Key stats
+
+- **<1ms** policy decision latency
+- **Sub-50ms** full firewall
+- **89%** of calls evaluated in pure Python (no LLM cost)
+- **5 frameworks** covered in one compliance report
+
+## Pricing
+
+| Plan | Price | Evaluations | Agents |
+|------|-------|-------------|--------|
+| Free | $0 | 10,000/month | 1 |
+| Pro | $149/month | 500,000/month | Unlimited |
+| Scale | $499/month | 5,000,000/month | Unlimited |
+| Enterprise | Custom | Unlimited | Unlimited |
+
+[Start for free →](https://polaxis.io)

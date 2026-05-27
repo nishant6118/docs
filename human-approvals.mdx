@@ -1,0 +1,85 @@
+# Human Approvals
+
+Require a human decision before high-risk agent actions execute.
+
+## How it works
+
+1. Agent calls `guard.evaluate("charge_card", {...})`
+2. Policy matches — action is `escalate`
+3. Polaxis sends a Slack notification to your team
+4. SDK pauses and waits (up to 10 minutes by default)
+5. Human clicks **Approve** or **Reject** in Slack
+6. Agent proceeds or `BlockedError` is raised
+
+No code change needed beyond the initial `evaluate()` call.
+
+## Set up Slack notifications
+
+1. Go to **Dashboard → Settings → Slack**
+2. Click **Connect Slack**
+3. Choose the channel where approvals should appear
+4. Test with the **Send test notification** button
+
+Or via API:
+
+```bash
+POST /api/v1/auth/test-slack
+{ "webhook_url": "https://hooks.slack.com/services/..." }
+```
+
+## What the Slack message looks like
+
+```
+🚨 Polaxis — Approval Required
+
+Agent: billing-agent
+Tool: charge_card
+Input: { "amount": 4999, "currency": "usd", "customer": "acme-corp" }
+Policy: escalate_large_charges
+
+[✅ Approve]  [❌ Reject]
+```
+
+One click. The agent either continues or stops.
+
+## Handle approval in your code
+
+```python
+from polaxis import Polaxis, BlockedError, PendingApprovalError
+
+guard = Polaxis(api_key="ag_prod_...", agent_id="billing-agent")
+
+try:
+    result = await guard.evaluate("charge_card", {
+        "amount": 4999,
+        "customer_id": "cust_123"
+    })
+    # Execution reaches here only after human approval
+    print("Approved — proceeding with charge")
+
+except BlockedError as e:
+    print(f"Rejected: {e.reason}")
+
+except PendingApprovalError as e:
+    print(f"Timed out waiting for approval: {e.approval_id}")
+```
+
+## Approval timeout
+
+Default timeout is 10 minutes. Configure per agent:
+
+```python
+guard = Polaxis(
+    api_key="ag_prod_...",
+    agent_id="billing-agent",
+    timeout_seconds=300  # 5 minutes
+)
+```
+
+## View approval history
+
+```bash
+GET /api/v1/approvals/history
+```
+
+Every approval and rejection is logged with timestamp, approver, and reason.

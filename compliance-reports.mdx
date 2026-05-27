@@ -1,0 +1,67 @@
+# Compliance Reports
+
+One-click PDF. Auditor-ready in 60 seconds.
+
+## Generate a report
+
+```bash
+POST /api/v1/compliance/reports/generate
+{
+  "framework": "soc2",
+  "agent_id": "billing-agent",
+  "date_from": "2026-01-01",
+  "date_to": "2026-03-31"
+}
+```
+
+The report is ready in under 60 seconds. Download it:
+
+```bash
+GET /api/v1/compliance/reports/{report_id}/download
+```
+
+## Supported frameworks
+
+| Framework | Coverage |
+|-----------|---------|
+| **SOC 2 Type II** | CC6, CC7, CC8 — change management, logical access, system operations |
+| **GDPR** | Article 22 (automated decision-making), Article 30 (records of processing), Article 32 (security) |
+| **HIPAA** | 164.312 (technical safeguards), 164.308 (administrative safeguards), audit controls |
+| **EU AI Act** | High-risk AI system requirements, human oversight, logging obligations |
+| **OWASP Agentic Top 10** | All 10 categories — prompt injection, excessive agency, insecure output handling |
+
+## What's in each report
+
+Every report includes:
+
+- **Audit log summary** — total tool calls, blocked, escalated, approved
+- **Policy coverage** — which policies were active and triggered
+- **Risk score timeline** — threat levels across the reporting period
+- **Human oversight record** — all escalations and approval decisions
+- **Data access log** — which data types were touched and by which agents
+- **SHA-256 hash chain** — tamper-evident proof of log integrity
+
+## From the dashboard
+
+1. Go to **Dashboard → Compliance**
+2. Select framework and date range
+3. Click **Generate Report**
+4. Download PDF
+
+## What it looks like in practice
+
+> *"Your enterprise security review asks: show me the audit log for every action your agent took. You click generate. 60 seconds later you hand them a PDF."*
+
+This is the document that unblocks enterprise deals.
+
+## Retention policy
+
+Configure how long audit data is retained:
+
+```bash
+POST /api/v1/compliance/retention-policy
+{
+  "retain_days": 365,
+  "auto_anonymise_after_days": 90
+}
+```

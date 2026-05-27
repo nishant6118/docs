@@ -1,0 +1,44 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Polaxis",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#2563eb",
+    "light": "#3b82f6",
+    "dark": "#2563eb"
+  },
+  "topbarLinks": [
+    { "name": "polaxis.io", "url": "https://polaxis.io" }
+  ],
+  "topbarCtaButton": {
+    "name": "Start for free",
+    "url": "https://polaxis.io"
+  },
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["introduction", "quickstart"]
+    },
+    {
+      "group": "Core Features",
+      "pages": [
+        "policy-engine",
+        "human-approvals",
+        "budget-controls",
+        "compliance-reports"
+      ]
+    },
+    {
+      "group": "Integrations",
+      "pages": ["integrations"]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/polaxisofficial",
+    "github": "https://github.com/nishant6118"
+  }
+}

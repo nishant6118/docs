@@ -1,0 +1,122 @@
+# Policy Engine
+
+Define exactly what your agents can and cannot do.
+
+## Overview
+
+Policies are rules that run on every tool call before it executes.
+Each policy has conditions and an action: `allow`, `block`, or `escalate`.
+
+```
+Tool call → Policy Engine → allow / block / escalate
+```
+
+Policies evaluate in priority order. First match wins.
+
+## Create a policy
+
+Go to **Dashboard → Policies → New Policy**, or via API:
+
+```python
+import httpx
+
+headers = {"Authorization": "Bearer ag_prod_..."}
+
+policy = {
+    "agent_id": "billing-agent",
+    "name": "Block large transactions",
+    "conditions": {
+        "tool_name": "charge_card",
+        "amount_gt": 10000
+    },
+    "action": "escalate",
+    "priority": 10
+}
+
+httpx.post("https://api.polaxis.io/api/v1/policies", json=policy, headers=headers)
+```
+
+## Policy examples
+
+### Block dangerous operations
+
+```json
+{
+  "name": "Block DELETE on production",
+  "conditions": {
+    "tool_name": {"in": ["delete_records", "drop_table", "truncate"]},
+    "environment": "production"
+  },
+  "action": "block"
+}
+```
+
+### Require approval for large payments
+
+```json
+{
+  "name": "Escalate large charges",
+  "conditions": {
+    "tool_name": "charge_card",
+    "tool_input.amount": {"gt": 500}
+  },
+  "action": "escalate"
+}
+```
+
+### Allow only specific email domains
+
+```json
+{
+  "name": "Block external email",
+  "conditions": {
+    "tool_name": "send_email",
+    "tool_input.to": {"not_contains": "@yourcompany.com"}
+  },
+  "action": "block"
+}
+```
+
+### Enforce data access scope
+
+```json
+{
+  "name": "Healthcare — PHI access control",
+  "conditions": {
+    "tool_name": {"in": ["read_patient", "update_record"]},
+    "tool_input.patient_id": {"not_in": "$session.authorized_patients"}
+  },
+  "action": "block"
+}
+```
+
+## Test a policy before deploying
+
+```bash
+POST /api/v1/policies/simulate
+{
+  "policy_id": "pol_xxx",
+  "tool_name": "charge_card",
+  "tool_input": {"amount": 9999}
+}
+# → { "would_trigger": true, "action": "escalate" }
+```
+
+## Policy templates
+
+Pre-built policy sets for your industry:
+
+| Template | Frameworks |
+|----------|-----------|
+| `fintech-bsa-aml` | BSA, AML, CFPB |
+| `healthcare-hipaa` | HIPAA, OCR |
+| `hr-gdpr` | GDPR, EU AI Act, CCPA |
+| `legal-privilege` | ABA Model Rules |
+| `devops-soc2` | SOC 2 Type II |
+
+Apply a template:
+
+```bash
+POST /api/v1/policy-templates/{template_id}/apply
+{ "agent_id": "your-agent-id" }
+```

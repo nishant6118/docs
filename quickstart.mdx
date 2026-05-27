@@ -1,0 +1,70 @@
+# Quick Start
+
+Get Polaxis running in under 5 minutes.
+
+## Install
+
+```bash
+pip install polaxis
+```
+
+## Get your API key
+
+1. Sign up at [polaxis.io](https://polaxis.io)
+2. Go to **Dashboard → Agents → Create Agent**
+3. Copy your API key — it starts with `ag_`
+
+## Add to your agent
+
+```python
+from polaxis import Polaxis
+
+guard = Polaxis(
+    api_key="ag_prod_...",
+    agent_id="your-agent-id"
+)
+
+# Before every tool call:
+result = await guard.evaluate("send_email", {
+    "to": "customer@example.com",
+    "subject": "Invoice",
+    "body": "..."
+})
+# → allow | escalate (block raises BlockedError)
+```
+
+That's it. Every tool call your agent makes is now governed.
+
+## What happens next
+
+| Decision | Meaning | Action |
+|----------|---------|--------|
+| `allow` | Safe to proceed | Tool call executes |
+| `block` | Policy violation | `BlockedError` raised |
+| `escalate` | Needs human approval | SDK waits, Slack notification sent |
+
+## Full example
+
+```python
+import asyncio
+from polaxis import Polaxis, BlockedError
+
+guard = Polaxis(api_key="ag_prod_...", agent_id="billing-agent")
+
+async def run_agent():
+    tools = [
+        ("send_email", {"to": "user@co.com", "body": "Your invoice is ready"}),
+        ("charge_card", {"amount": 4999, "currency": "usd"}),
+        ("delete_records", {"table": "users", "where": "inactive=true"}),
+    ]
+
+    for tool_name, tool_input in tools:
+        try:
+            result = await guard.evaluate(tool_name, tool_input)
+            print(f"✓ {tool_name} — {result.decision}")
+            # ... execute your tool here
+        except BlockedError as e:
+            print(f"✗ {tool_name} blocked — {e.reason}")
+
+asyncio.run(run_agent())
+```
