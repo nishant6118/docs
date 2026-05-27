@@ -1,0 +1,23 @@
+<svg width="114" height="30" viewBox="0 0 114 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad-d" x1="0" y1="0" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <!-- Icon: gradient rounded square -->
+  <rect width="30" height="30" rx="8" fill="url(#grad-d)"/>
+  <!-- Shield-half icon scaled to ~18x18, centered at 15,15 -->
+  <g transform="translate(6.75, 6) scale(0.75)">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+      stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <line x1="12" y1="2" x2="12" y2="22"
+      stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="38" y="21"
+    font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif"
+    font-weight="800" font-size="15.5" fill="white" letter-spacing="-0.5">
+    Polaxis
+  </text>
+</svg>
