@@ -22,8 +22,8 @@
     { "name": "polaxis.io", "url": "https://polaxis.io" }
   ],
   "topbarCtaButton": {
-    "name": "Start for free",
-    "url": "https://polaxis.io/register"
+    "name": "Open app",
+    "url": "https://polaxis.io/dashboard"
   },
   "anchors": [
     {
