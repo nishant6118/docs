@@ -1,36 +1,58 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Polaxis",
+  "name": "Polaxis Docs",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#2563eb",
-    "light": "#3b82f6",
-    "dark": "#2563eb"
+    "primary": "#6366f1",
+    "light": "#a5b4fc",
+    "dark": "#4f46e5"
+  },
+  "metadata": {
+    "og:site_name": "Polaxis Docs — AI Agent Security & Governance",
+    "og:type": "website",
+    "twitter:card": "summary_large_image",
+    "twitter:site": "@polaxisofficial",
+    "description": "Polaxis is the runtime security and governance layer for AI agents. Docs for policy enforcement, human approvals, budget controls, compliance reports, and framework integrations."
   },
   "topbarLinks": [
     { "name": "polaxis.io", "url": "https://polaxis.io" }
   ],
   "topbarCtaButton": {
     "name": "Start for free",
-    "url": "https://polaxis.io"
+    "url": "https://polaxis.io/register"
   },
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/nishant6118/Polaxis-SDK-MCP"
+    },
+    {
+      "name": "Blog",
+      "icon": "newspaper",
+      "url": "https://polaxis.io/blog"
+    }
+  ],
   "navigation": [
     {
       "group": "Getting Started",
       "pages": ["introduction", "quickstart"]
     },
     {
-      "group": "Core Features",
+      "group": "Security & Governance",
       "pages": [
         "policy-engine",
         "human-approvals",
-        "budget-controls",
-        "compliance-reports"
+        "budget-controls"
       ]
+    },
+    {
+      "group": "Compliance",
+      "pages": ["compliance-reports"]
     },
     {
       "group": "Integrations",
@@ -39,6 +61,6 @@
   ],
   "footerSocials": {
     "twitter": "https://twitter.com/polaxisofficial",
-    "github": "https://github.com/nishant6118"
+    "github": "https://github.com/nishant6118/Polaxis-SDK-MCP"
   }
 }

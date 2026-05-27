@@ -1,0 +1,109 @@
+---
+title: "Budget Controls — AI Agent Spending Limits & Cost Caps"
+description: "Set hard spending limits per AI agent, per session, or per day. Auto-block when thresholds are hit. Full cost breakdowns with real-time alerts. Prevent runaway AI agent bills before they arrive."
+---
+
+# Budget Controls
+
+Set hard spending limits on your agents. Auto-block when thresholds are hit.
+
+## Why this matters
+
+Uber burned its entire annual AI budget in 4 months after giving 5,000 engineers Claude Code access.
+One SaaS team (35 engineers) got a $50,000 April bill from Claude Code, Cursor, and custom agents combined.
+
+Budget controls put a hard ceiling on what any agent can spend — per session, per day, or per month.
+
+## Configure a budget
+
+```python
+from polaxis import Polaxis
+
+guard = Polaxis(
+    api_key="ag_prod_...",
+    agent_id="billing-agent",
+    daily_budget_usd=50.00,      # Hard stop at $50/day
+    session_budget_usd=5.00,     # Hard stop at $5/session
+    alert_at_pct=80,             # Slack alert at 80% of limit
+)
+```
+
+Or via the dashboard: **Agents → Select agent → Budget tab**.
+
+## Pass estimated cost on each call
+
+```python
+result = await guard.evaluate(
+    "call_llm",
+    {"prompt": "..."},
+    estimated_cost_usd=0.05
+)
+
+# After the tool runs, record actual cost:
+await guard.record_completion(
+    tool_name="call_llm",
+    actual_cost_usd=0.032,
+    duration_ms=1240
+)
+```
+
+Polaxis tracks cumulative spend in real time and blocks the next call if the budget is exceeded.
+
+## What happens when the limit is hit
+
+```python
+from polaxis import BlockedError
+
+try:
+    result = await guard.evaluate("call_llm", inputs, estimated_cost_usd=0.05)
+except BlockedError as e:
+    if e.reason == "budget_exceeded":
+        print(f"Daily limit reached: {e.details['spent_usd']} / {e.details['limit_usd']}")
+```
+
+The agent raises `BlockedError` with `reason="budget_exceeded"`. Your code decides whether to fail gracefully, notify the user, or queue for the next day.
+
+## Budget types
+
+| Type | Config key | Resets |
+|------|-----------|--------|
+| Per session | `session_budget_usd` | Each new `Polaxis()` instance |
+| Per day | `daily_budget_usd` | Midnight UTC |
+| Per month | `monthly_budget_usd` | 1st of each month |
+
+All three can be set simultaneously. The first limit hit triggers a block.
+
+## Set budgets via API
+
+```bash
+PATCH /api/v1/agents/{agent_id}/budget
+{
+  "daily_budget_usd": 100,
+  "session_budget_usd": 10,
+  "alert_at_pct": 75
+}
+```
+
+## View spend in the dashboard
+
+**Dashboard → Budgets** shows:
+
+- Current spend per agent (today, this month)
+- Spend rate over time
+- Blocked calls due to budget limits
+- Per-tool cost breakdown
+
+## Soft alerts before the hard stop
+
+Set `alert_at_pct` to get a Slack notification before the limit is hit:
+
+```python
+guard = Polaxis(
+    api_key="ag_prod_...",
+    agent_id="research-agent",
+    daily_budget_usd=100.00,
+    alert_at_pct=80,  # Slack alert at $80 spent
+)
+```
+
+The alert gives your team time to intervene before the agent stops cold.
